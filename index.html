@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Tienda MkTimon</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #0d47a1, #1976d2);
+    color: #e3f2fd;
+    margin: 0; padding: 20px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  h1 {
+    margin-bottom: 30px;
+  }
+  .arma {
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 10px 0;
+    width: 320px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    text-align: center;
+  }
+  button {
+    background: #42a5f5;
+    border: none;
+    padding: 10px 20px;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  button:hover {
+    background: #1e88e5;
+  }
+  #modal {
+    display: none;
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.6);
+    justify-content: center; align-items: center;
+  }
+  #modalContent {
+    background: #1565c0;
+    padding: 25px 30px;
+    border-radius: 15px;
+    color: #e3f2fd;
+    max-width: 400px;
+    text-align: center;
+  }
+  input {
+    padding: 10px;
+    width: 80%;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: none;
+    text-transform: uppercase;
+  }
+  #msgPromo {
+    min-height: 20px;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<h1>Tienda MkTimon</h1>
+
+<div id="armasContainer"></div>
+
+<!-- Modal -->
+<div id="modal">
+  <div id="modalContent">
+    <h2 id="armaName"></h2>
+    <p id="armaDesc"></p>
+    <p><strong>Precio original: </strong><span id="precioOriginal"></span></p>
+    <p><strong>Precio final: </strong><span id="precioFinal"></span></p>
+    <input type="text" id="promoInput" placeholder="Código promocional" oninput="validarPromo()" />
+    <div id="msgPromo"></div>
+    <button onclick="confirmarCompra()">Confirmar compra</button>
+    <button onclick="cerrarModal()">Cancelar</button>
+  </div>
+</div>
+
+<script>
+  // Datos armas
+  const armas = [
+    { nombre: 'Gingerscope', precio: 10000, promo: 'WINTER', desc: 'Rifle de precisión con descuento de invierno', descuento: 900 },
+    { nombre: 'Harvester', precio: 1000, promo: '', desc: 'Herramienta confiable', descuento: 0 },
+    { nombre: 'Ginger', precio: 500, promo: '', desc: 'Arma ligera y rápida', descuento: 0 },
+    { nombre: 'Battle Axe', precio: 3000, promo: '', desc: 'Hacha poderosa para combate cuerpo a cuerpo', descuento: 0 },
+    { nombre: 'Xbox Knife', precio: 1200, promo: '', desc: 'Cuchillo personalizado Xbox', descuento: 0 },
+    { nombre: 'Luger', precio: 1500, promo: '', desc: 'Pistola clásica alemana', descuento: 0 },
+    { nombre: 'Green Luger', precio: 1800, promo: '', desc: 'Luger con diseño verde camuflaje', descuento: 0 },
+    { nombre: 'Red Luger', precio: 1800, promo: '', desc: 'Luger con diseño rojo brillante', descuento: 0 },
+    { nombre: 'Relaxed Arms', precio: 800, promo: '', desc: 'Arma básica para principiantes', descuento: 0 },
+    { nombre: 'Best Offer', precio: 0, promo: '', desc: '¡PROGRAMACIÓN GRATIS POR 1 HORA! Compra cualquier cosa', descuento: 0 }
+  ];
+
+  let armaActual = null;
+  let precioBase = 0;
+  let descuento = 0;
+  let codigoPromo = '';
+
+  // Crear listado armas
+  const container = document.getElementById('armasContainer');
+  armas.forEach((arma, i) => {
+    const div = document.createElement('div');
+    div.classList.add('arma');
+    div.innerHTML = `
+      <h3>${arma.nombre}</h3>
+      <p>${arma.precio > 0 ? 'Precio: ' + arma.precio.toLocaleString() + ' RUB' : 'Gratis'}</p>
+      <button onclick="abrirModal(${i})">Comprar</button>
+    `;
+    container.appendChild(div);
+  });
+
+  function abrirModal(i) {
+    armaActual = armas[i];
+    precioBase = armaActual.precio;
+    descuento = 0;
+    codigoPromo = armaActual.promo;
+
+    document.getElementById('armaName').textContent = armaActual.nombre;
+    document.getElementById('armaDesc').textContent = armaActual.desc;
+    document.getElementById('precioOriginal').textContent = precioBase > 0 ? precioBase.toLocaleString() + ' RUB' : 'GRATIS';
+    document.getElementById('precioFinal').textContent = precioBase > 0 ? precioBase.toLocaleString() + ' RUB' : 'GRATIS';
+    document.getElementById('promoInput').value = '';
+    document.getElementById('msgPromo').textContent = '';
+    document.getElementById('promoInput').style.display = precioBase === 0 ? 'none' : 'inline-block';
+    document.getElementById('modal').style.display = 'flex';
+  }
+
+  function cerrarModal() {
+    document.getElementById('modal').style.display = 'none';
+  }
+
+  function validarPromo() {
+    const input = document.getElementById('promoInput').value.trim().toUpperCase();
+    const msg = document.getElementById('msgPromo');
+
+    if(!input) {
+      descuento = 0;
+      document.getElementById('precioFinal').textContent = precioBase.toLocaleString() + ' RUB';
+      msg.textContent = '';
+      return;
+    }
+
+    if(codigoPromo && input === codigoPromo) {
+      descuento = armaActual.descuento;
+      const nuevoPrecio = Math.max(precioBase - descuento, 0);
+      document.getElementById('precioFinal').textContent = nuevoPrecio.toLocaleString() + ' RUB';
+      msg.style.color = '#a5d6a7';
+      msg.textContent = `¡Código válido! Descuento de ${descuento.toLocaleString()} RUB.`;
+    } else {
+      descuento = 0;
+      document.getElementById('precioFinal').textContent = precioBase.toLocaleString() + ' RUB';
+      msg.style.color = '#ef9a9a';
+      msg.textContent = 'Código promocional inválido.';
+    }
+  }
+
+  function confirmarCompra() {
+    let precioFinal = precioBase - descuento;
+    if(precioFinal < 0) precioFinal = 0;
+
+    alert(`Compraste ${armaActual.nombre} por ${precioFinal.toLocaleString()} RUB.\n¡Gracias por tu compra!`);
+
+    // Redirigir a otra web al confirmar compra:
+    window.location.href = 'https://tudireccionexterna.com';
+
+    cerrarModal();
+  }
+</script>
+
+</body>
+</html>
