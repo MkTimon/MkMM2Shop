@@ -2,64 +2,117 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Shop</title>
+<title>Void Shop</title>
 
 <style>
 
 body{
 margin:0;
-font-family:Arial, sans-serif;
-background: linear-gradient(135deg,#0a0a0a,#1a1a1a);
-color:white;
+height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
-min-height:100vh;
+font-family:Arial;
+
+background:
+radial-gradient(circle at 20% 20%, #2a2a2a, transparent 40%),
+radial-gradient(circle at 80% 80%, #1f1f1f, transparent 40%),
+linear-gradient(135deg,#0a0a0a,#111);
+
+color:white;
+overflow:hidden;
+}
+
+/* floating glow blobs */
+.bg::before,
+.bg::after{
+content:"";
+position:absolute;
+width:300px;
+height:300px;
+border-radius:50%;
+filter: blur(80px);
+opacity:0.25;
+}
+
+.bg::before{
+background:#6a5acd;
+top:10%;
+left:10%;
+}
+
+.bg::after{
+background:#00ffff;
+bottom:10%;
+right:10%;
 }
 
 .container{
+position:relative;
 width:420px;
 padding:25px;
-border-radius:20px;
-background:rgba(255,255,255,0.06);
-backdrop-filter: blur(25px);
-border:1px solid rgba(255,255,255,0.12);
-box-shadow:0 0 40px rgba(0,0,0,0.6);
+border-radius:24px;
+
+/* LIQUID GLASS CORE */
+background: rgba(255,255,255,0.06);
+border: 1px solid rgba(255,255,255,0.15);
+backdrop-filter: blur(30px) saturate(160%);
+box-shadow:
+0 20px 60px rgba(0,0,0,0.6),
+inset 0 1px 0 rgba(255,255,255,0.2);
+
 }
 
 h1{
 text-align:center;
 margin-bottom:15px;
+letter-spacing:1px;
 }
 
 .item{
-background:rgba(255,255,255,0.05);
-padding:12px;
-margin:10px 0;
-border-radius:12px;
 display:flex;
 justify-content:space-between;
 align-items:center;
+
+padding:12px;
+margin:10px 0;
+
+border-radius:16px;
+
+background: rgba(255,255,255,0.05);
 border:1px solid rgba(255,255,255,0.08);
+
+transition:0.2s;
+}
+
+.item:hover{
+transform: scale(1.02);
+background: rgba(255,255,255,0.08);
 }
 
 button{
-background:rgba(255,255,255,0.15);
-border:none;
-color:white;
 padding:8px 12px;
-border-radius:10px;
+border-radius:12px;
+border:none;
 cursor:pointer;
+color:white;
+
+background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.05));
+
+backdrop-filter: blur(10px);
+
 transition:0.2s;
 }
 
 button:hover{
-background:rgba(255,255,255,0.3);
+transform: scale(1.05);
+background: rgba(255,255,255,0.2);
 }
 
-.code{
+.promo{
 margin-top:15px;
 text-align:center;
+opacity:0.9;
 }
 
 input{
@@ -68,6 +121,9 @@ border-radius:10px;
 border:none;
 outline:none;
 width:70%;
+
+background: rgba(255,255,255,0.08);
+color:white;
 }
 
 </style>
@@ -75,9 +131,11 @@ width:70%;
 
 <body>
 
+<div class="bg"></div>
+
 <div class="container">
 
-<h1>Item Shop</h1>
+<h1>Void Shop</h1>
 
 <div class="item">
 <span>Darkbringer — 36 R$</span>
@@ -98,9 +156,9 @@ width:70%;
 Every order includes a free random colored Seer 🎁
 </p>
 
-<div class="code">
-<p>Promo Code:</p>
-<input id="promo" placeholder="Enter code">
+<div class="promo">
+<p>Promo Code</p>
+<input id="code" placeholder="Enter EPICXD">
 </div>
 
 </div>
@@ -112,11 +170,11 @@ window.location.href =
 "https://www.roblox.com/users/2865023921/profile";
 }
 
-document.getElementById("promo").addEventListener("change", function(){
+document.getElementById("code").addEventListener("change", function(){
 if(this.value === "EPICXD"){
-alert("Code applied: EPICXD ✔");
+alert("✔ Code accepted");
 } else if(this.value !== ""){
-alert("Invalid code");
+alert("✖ Invalid code");
 }
 });
 
